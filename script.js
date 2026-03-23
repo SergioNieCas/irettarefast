@@ -15,22 +15,125 @@ const velocidadInput = document.getElementById("velocidad");
 const fileInput = document.getElementById("fileInput");
 const customButton = document.getElementById("customButton");
 const fileName = document.getElementById("fileName");
+const formatoInfo = document.getElementById("formatoInfo");
+
+// Función para leer archivos TXT
+function leerTXT(file) {
+    const reader = new FileReader();
+    reader.onload = () => {
+        textoInput.value = reader.result;
+        formatoInfo.textContent = "✓ TXT cargado";
+    };
+    reader.readAsText(file);
+}
+
+// Función para leer archivos EPUB
+async function leerEPUB(file) {
+    try {
+        const arrayBuffer = await file.arrayBuffer();
+        const book = ePub(arrayBuffer);
+        
+        await book.ready;
+
+        // Obtener el contenido completo del libro
+        let contenidoCompleto = "";
+        
+        // Iterar sobre todos los ítems en el spine del libro
+        for (let item of book.spine.spineItems) {
+            try {
+                const html = await item.load(book.load.bind(book));
+                const contenido = await item.render();
+                
+                if (contenido) {
+                    // Crear un elemento temporal para parsear el HTML
+                    const temp = document.createElement("div");
+                    temp.innerHTML = contenido;
+                    
+                    // Extraer solo el texto, eliminando etiquetas
+                    const texto = temp.innerText || temp.textContent;
+                    contenidoCompleto += texto + " ";
+                }
+            } catch (e) {
+                console.warn("Error al procesar sección del EPUB:", e);
+            }
+        }
+
+        textoInput.value = contenidoCompleto.trim();
+        formatoInfo.textContent = `✓ EPUB cargado (${Math.round(contenidoCompleto.length / 1000)}KB)`;
+    } catch (error) {
+        throw new Error("Error al leer EPUB: " + error.message);
+    }
+}
+
+// Función para leer archivos PDF (opcional, requiere PDF.js)
+async function leerPDF(file) {
+    // Cargar PDF.js desde CDN si no está disponible
+    if (typeof pdfjsLib === 'undefined') {
+        await cargarPDF_js();
+    }
+
+    try {
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        
+        let contenidoCompleto = "";
+
+        for (let numPagina = 1; numPagina <= pdf.numPages; numPagina++) {
+            const pagina = await pdf.getPage(numPagina);
+            const contenido = await pagina.getTextContent();
+            const textos = contenido.items.map(item => item.str).join(" ");
+            contenidoCompleto += textos + " ";
+        }
+
+        textoInput.value = contenidoCompleto.trim();
+        formatoInfo.textContent = `✓ PDF cargado (${pdf.numPages} páginas)`;
+    } catch (error) {
+        throw new Error("Error al leer PDF: " + error.message);
+    }
+}
+
+// Cargar PDF.js desde CDN
+async function cargarPDF_js() {
+    return new Promise((resolve, reject) => {
+        const script = document.createElement("script");
+        script.src = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
+        script.onload = () => {
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 
+                "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+            resolve();
+        };
+        script.onerror = reject;
+        document.head.appendChild(script);
+    });
+}
 
 // Cuando se hace click en el botón, se abre el selector real
 customButton.addEventListener("click", () => fileInput.click());
 
-// Mostrar el nombre del archivo seleccionado y cargarlo en el textarea
-fileInput.addEventListener("change", (event) => {
+// Manejar diferentes tipos de archivo
+fileInput.addEventListener("change", async (event) => {
     const file = event.target.files[0];
     if (!file) return;
 
     fileName.textContent = file.name;
+    formatoInfo.textContent = "Procesando...";
 
-    const reader = new FileReader();
-    reader.onload = () => {
-        textoInput.value = reader.result;
-    };
-    reader.readAsText(file);
+    try {
+        const extension = file.name.split('.').pop().toLowerCase();
+        
+        if (extension === "txt") {
+            leerTXT(file);
+        } else if (extension === "epub") {
+            await leerEPUB(file);
+        } else if (extension === "pdf") {
+            await leerPDF(file);
+        } else {
+            formatoInfo.textContent = "Formato no soportado";
+        }
+    } catch (error) {
+        console.error("Error al procesar archivo:", error);
+        formatoInfo.textContent = `Error: ${error.message}`;
+    }
 });
 
 // Función para dividir el texto en palabras
