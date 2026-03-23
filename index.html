@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visor de Palabras</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Panel de subida de texto y controles -->
+    <div class="controls">
+      <input type="file" id="fileInput" accept=".txt">
+      <textarea id="textoInput" placeholder="Puedes pegarme el texto si tú quieres, sino no, no hace falta si no quieres" rows="10"></textarea>
+      <br>
+      <label for="velocidad">Velocidad (ms): </label>
+      <input type="number" id="velocidad" value="180" min="20" step="10">
+      <button id="startBtn">Iniciar</button>
+      <button id="pauseBtn">Pausar</button>
+      <button id="stopBtn">Detener</button>
+    </div>
+
+    <!-- Panel central donde aparece la palabra -->
+    <div class="display">
+      <span id="palabraCentral"></span>
+    </div>
+
+    <!-- Panel con todas las palabras -->
+    <div class="wordList" id="wordList"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

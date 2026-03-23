@@ -1,0 +1,68 @@
+/* Diseño básico para centrar la palabra y organizar la página */
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    background-color: #121212;
+    color: #e0e0e0;
+  }
+  
+  textarea {
+    background-color: #1e1e1e; /* textarea oscuro */
+    color: #e0e0e0;
+    border: 1px solid #444;
+  }
+
+  button {
+    background-color: #333;
+    color: #e0e0e0;
+    border: 1px solid #555;
+    padding: 5px 10px;
+    cursor: pointer;
+  }
+
+  input[type="number"] {
+    background-color: #121212;
+    color: #e0e0e0;
+    border: 1px solid #444;
+  }
+
+  input[id="fileInput"]{
+    background-color: #121212;
+    color: #e0e0e0;
+    border: 1px solid #444;
+  }
+
+  .container {
+    display: flex;
+    gap: 20px;
+  }
+  
+  .controls {
+    flex: 1;
+  }
+  
+/* Panel central */
+  .display {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 36px;
+    height: 200px;
+    border: 0px solid #444;
+  }
+  
+  .wordList {
+    flex: 1;
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid #444;
+    padding: 10px;
+  }
+  
+  .red-letter {
+    color: #ff5555;
+    font-weight: bold;
+  }
