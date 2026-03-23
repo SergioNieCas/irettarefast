@@ -8,25 +8,31 @@
 </head>
 <body>
   <div class="container">
-    <!-- Panel de subida de texto y controles -->
-    <div class="controls">
-      <input type="file" id="fileInput" accept=".txt">
-      <textarea id="textoInput" placeholder="Puedes pegarme el texto si tú quieres, sino no, no hace falta si no quieres" rows="10"></textarea>
-      <br>
-      <label for="velocidad">Velocidad (ms): </label>
-      <input type="number" id="velocidad" value="180" min="20" step="10">
-      <button id="startBtn">Iniciar</button>
-      <button id="pauseBtn">Pausar</button>
-      <button id="stopBtn">Detener</button>
-    </div>
-
     <!-- Panel central donde aparece la palabra -->
     <div class="display">
       <span id="palabraCentral"></span>
     </div>
 
-    <!-- Panel con todas las palabras -->
-    <div class="wordList" id="wordList"></div>
+    <!-- Panel inferior con controles y lista de palabras -->
+    <div class="bottom">
+      <!-- Panel de subida de texto y controles -->
+      <div class="controls">
+        <!-- <input type="file" id="fileInput" accept=".txt"> -->
+        <input type="file" id="fileInput" accept=".txt" style="display:none;">
+        <button id="customButton">Seleccionar archivo</button>
+        <span id="fileName">Ningún archivo seleccionado</span>
+        <textarea id="textoInput" placeholder="Puedes pegarme el texto si tú quieres, sino no, no hace falta si no quieres" rows="10"></textarea>
+        <br>
+        <label for="velocidad">Velocidad (ms): </label>
+        <input type="number" id="velocidad" value="180" min="20" step="10">
+        <button id="startBtn">Iniciar</button>
+        <button id="pauseBtn">Pausar</button>
+        <button id="stopBtn">Detener</button>
+      </div>
+
+      <!-- Panel con todas las palabras -->
+      <div class="wordList" id="wordList"></div>
+    </div>
   </div>
 
   <script src="script.js"></script>

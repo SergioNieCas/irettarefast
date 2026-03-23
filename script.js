@@ -13,11 +13,18 @@ const pauseBtn = document.getElementById("pauseBtn");
 const stopBtn = document.getElementById("stopBtn");
 const velocidadInput = document.getElementById("velocidad");
 const fileInput = document.getElementById("fileInput");
-// const textoInput = document.getElementById("textoInput");
+const customButton = document.getElementById("customButton");
+const fileName = document.getElementById("fileName");
 
+// Cuando se hace click en el botón, se abre el selector real
+customButton.addEventListener("click", () => fileInput.click());
+
+// Mostrar el nombre del archivo seleccionado y cargarlo en el textarea
 fileInput.addEventListener("change", (event) => {
     const file = event.target.files[0];
     if (!file) return;
+
+    fileName.textContent = file.name;
 
     const reader = new FileReader();
     reader.onload = () => {
