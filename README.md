@@ -1,6 +1,8 @@
 # IrettareFast
 
 ## Descripción
+Antes de nada: Avisar de que esto es una herramienta vibecodeada hasta arriba (shame on me I guess). Me siento sucio...
+
 IrettareFast es un lector de palabras por lotes (spritz-like) implementado en HTML/CSS/JS puro. Permite cargar texto desde `.txt`, `.epub`, `.pdf`, o pegar texto manualmente. La app muestra una palabra a la vez en el panel principal, con una letra central destacada. En el panel derecho se muestra la lista de palabras y se resalta la palabra activa, lo que facilita seguir el flujo de lectura.
 
 ## Características principales
