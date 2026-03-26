@@ -25,12 +25,27 @@
         <span id="fileName">Ningún archivo seleccionado</span>
         <span id="formatoInfo" style="color: #888; font-size: 0.9em;"></span>
         <textarea id="textoInput" placeholder="Puedes pegarme el texto si tú quieres, sino no, no hace falta si no quieres" rows="10"></textarea>
-        <br>
-        <label for="velocidad">Lentitud (ms): </label>
-        <input type="number" id="velocidad" value="180" min="20" step="10">
-        <button id="startBtn">Iniciar</button>
-        <button id="pauseBtn">Pausar</button>
-        <button id="stopBtn">Detener</button>
+        <div class="settings">
+          <div class="setting-item">
+            <label for="velocidad">Lentitud (ms): </label>
+            <input type="number" id="velocidad" value="180" min="20" step="10">
+          </div>
+          <div class="setting-item">
+            <label for="fontSize">Tamaño (px): </label>
+            <input type="number" id="fontSize" value="48" min="14" max="200" step="2">
+          </div>
+          <div class="setting-item">
+            <label><input type="checkbox" id="toggleBold" checked> Negrita roja</label>
+          </div>
+          <div class="setting-item">
+            <label><input type="checkbox" id="toggleLine" checked> Línea central</label>
+          </div>
+        </div>
+        <div class="actionButtons">
+          <button id="startBtn">Iniciar</button>
+          <button id="pauseBtn">Pausar</button>
+          <button id="stopBtn">Detener</button>
+        </div>
       </div>
 
       <!-- Panel con todas las palabras -->

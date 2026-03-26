@@ -52,14 +52,54 @@ body {
   }
   
   .display {
+    position: relative;
     height: 50vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 36px;
     border: 0px solid #444;
+    overflow: hidden;
+    background: linear-gradient(90deg, rgba(18,18,18,1) 0%, rgba(28,28,28,1) 100%);
+    --line-gap: 60px;
   }
-  
+
+  .display::before,
+  .display::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    width: 2px;
+    background: rgba(255, 85, 85, 0.5);
+    transform: translateX(-50%);
+    transition: opacity 0.2s ease;
+  }
+
+  .display::before {
+    top: 0;
+    bottom: calc(50% + var(--line-gap) / 2);
+    height: auto;
+  }
+
+  .display::after {
+    top: calc(50% + var(--line-gap) / 2);
+    bottom: 0;
+    height: auto;
+  }
+
+  .display:not(.line-visible)::before,
+  .display:not(.line-visible)::after {
+    opacity: 0;
+  }
+
+  #palabraCentral {
+    position: absolute;
+    top: 50%;
+    white-space: nowrap;
+    transform: translateY(-50%);
+    font-family: 'Courier New', monospace;
+    color: #fff;
+  }
+
   .bottom {
     display: flex;
     height: 50vh;
@@ -70,8 +110,35 @@ body {
     padding: 20px;
     overflow-y: auto;
     border-right: 1px solid #444;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
   }
-  
+
+  .settings {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .setting-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #e0e0e0;
+  }
+
+  .actionButtons {
+    display: flex;
+    gap: 8px;
+  }
+
+  .actionButtons button {
+    flex: 1;
+    min-width: 0;
+  }
+
   .wordList {
     flex: 1;
     overflow-y: auto;
@@ -79,6 +146,31 @@ body {
     padding: 10px;
     opacity: 0.5;
     transition: opacity 0.3s ease;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    line-height: 1.6;
+    max-height: 100%;
+    align-content: flex-start;
+    background-color: #161616;
+  }
+
+  .wordList:hover {
+    opacity: 1;
+  }
+
+  .wordList span {
+    padding: 2px 4px;
+    border-radius: 4px;
+    cursor: pointer;
+    color: #ddd;
+    font-size: 14px;
+  }
+
+  .wordList span.active {
+    background-color: #ff5555;
+    color: #121212;
+    font-weight: bold;
   }
   
   .wordList:hover {
@@ -86,10 +178,23 @@ body {
   }
   
   .red-letter {
+    color: inherit;
+    font-weight: normal;
+  }
+
+  .red-letter.bold {
     color: #ff5555;
     font-weight: bold;
   }
-  
+
+  .pivot {
+    text-decoration: none;
+  }
+
+  .pre, .post {
+    opacity: 0.9;
+  }
+
   /* Estilo del botón personalizado */
   #customButton {
     background-color: #333;

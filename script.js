@@ -3,6 +3,7 @@ let words = [];         // Lista de palabras del texto
 let currentIndex = 0;   // Índice de la palabra actual
 let intervalId = null;  // Para controlar la animación
 let isPaused = false;
+let isRunning = false;
 
 // Referencias a elementos HTML
 const textoInput = document.getElementById("textoInput");
@@ -12,7 +13,11 @@ const startBtn = document.getElementById("startBtn");
 const pauseBtn = document.getElementById("pauseBtn");
 const stopBtn = document.getElementById("stopBtn");
 const velocidadInput = document.getElementById("velocidad");
+const fontSizeInput = document.getElementById("fontSize");
+const toggleBold = document.getElementById("toggleBold");
+const toggleLine = document.getElementById("toggleLine");
 const fileInput = document.getElementById("fileInput");
+let wordSpans = [];
 const customButton = document.getElementById("customButton");
 const fileName = document.getElementById("fileName");
 const formatoInfo = document.getElementById("formatoInfo");
@@ -140,9 +145,19 @@ fileInput.addEventListener("change", async (event) => {
 function procesarTexto() {
   const texto = textoInput.value.trim();
   if (!texto) return;
+
   words = texto.split(/\s+/); // Divide por espacios
   currentIndex = 0;
   mostrarWordList();
+  if (words.length > 0) {
+    mostrarPalabra(currentIndex);
+  }
+}
+
+function actualizarWordListActive(index) {
+  wordSpans.forEach((span, i) => {
+    span.classList.toggle("active", i === index);
+  });
 }
 
 // Función para mostrar la palabra central con letra roja
@@ -151,42 +166,95 @@ function mostrarPalabra(index) {
   if (!palabra) return;
 
   const mitad = Math.floor(palabra.length / 2);
-  // Construye la palabra con la letra central en rojo
-  const resultado = palabra.slice(0, mitad) +
-                    `<span class="red-letter">${palabra[mitad]}</span>` +
-                    palabra.slice(mitad + 1);
-  palabraCentral.innerHTML = resultado;
+  const pre = palabra.slice(0, mitad);
+  const pivot = palabra[mitad] || "";
+  const post = palabra.slice(mitad + 1);
+
+  palabraCentral.innerHTML =
+    `<span class="pre">${pre}</span>` +
+    `<span class="pivot red-letter${toggleBold.checked ? " bold" : ""}">${pivot}</span>` +
+    `<span class="post">${post}</span>`;
+
+  palabraCentral.style.fontSize = `${fontSizeInput.value}px`;
+
+  // Ajustar hueco de la línea central para no tocar la letra
+  const gap = Math.max(30, parseFloat(fontSizeInput.value) * 1.8);
+  document.querySelector('.display').style.setProperty('--line-gap', `${gap}px`);
+
+  actualizarWordListActive(index);
+
+  const activeSpan = wordListDiv.querySelector(`[data-index="${index}"]`);
+
+  if (toggleLine.checked) {
+    document.querySelector('.display').classList.add('line-visible');
+  } else {
+    document.querySelector('.display').classList.remove('line-visible');
+  }
+  if (activeSpan) {
+    activeSpan.scrollIntoView({ behavior: "smooth", block: "center", inline: "center" });
+  }
+
+  // Mantener la letra roja en el mismo punto (centro horizontal del contenedor)
+  const preSpan = palabraCentral.querySelector(".pre");
+  const pivotSpan = palabraCentral.querySelector(".pivot");
+
+  const preWidth = preSpan ? preSpan.offsetWidth : 0;
+  const pivotWidth = pivotSpan ? pivotSpan.offsetWidth : 0;
+
+  palabraCentral.style.position = "absolute";
+  palabraCentral.style.left = `calc(50% - ${preWidth + pivotWidth / 2}px)`;
+  palabraCentral.style.top = "50%";
+  palabraCentral.style.transform = "translateY(-50%)";
 }
 
 // Mostrar todas las palabras a la izquierda
 function mostrarWordList() {
   wordListDiv.innerHTML = "";
+  wordSpans = [];
+
   words.forEach((w, i) => {
     const span = document.createElement("span");
-    span.textContent = w + " ";
-    span.style.cursor = "pointer";
+    span.textContent = w;
+    span.dataset.index = i;
     span.addEventListener("click", () => {
       currentIndex = i;
       mostrarPalabra(currentIndex);
     });
     wordListDiv.appendChild(span);
+    wordSpans.push(span);
   });
+
+  actualizarWordListActive(currentIndex);
+}
+
+function crearIntervalo() {
+  if (intervalId) {
+    clearInterval(intervalId);
+  }
+
+  intervalId = setInterval(() => {
+    if (!isPaused && words.length > 0) {
+      mostrarPalabra(currentIndex);
+      currentIndex++;
+      if (currentIndex >= words.length) {
+        currentIndex = 0;
+      }
+    }
+  }, parseInt(velocidadInput.value, 10));
 }
 
 // Función para iniciar el desplazamiento de palabras
 function iniciar() {
   procesarTexto();
-  if (intervalId) clearInterval(intervalId);
+  if (!words.length) {
+    clearInterval(intervalId);
+    intervalId = null;
+    isRunning = false;
+    return;
+  }
 
-  intervalId = setInterval(() => {
-    if (!isPaused) {
-      mostrarPalabra(currentIndex);
-      currentIndex++;
-      if (currentIndex >= words.length) {
-        currentIndex = 0; // Vuelve al inicio
-      }
-    }
-  }, parseInt(velocidadInput.value));
+  crearIntervalo();
+  isRunning = true;
 }
 
 // Pausar y reanudar
@@ -198,8 +266,44 @@ pauseBtn.addEventListener("click", () => {
 // Detener
 stopBtn.addEventListener("click", () => {
   clearInterval(intervalId);
+  intervalId = null;
+  isRunning = false;
+  isPaused = false;
   currentIndex = 0;
   palabraCentral.innerHTML = "";
+  wordSpans.forEach(span => span.classList.remove("active"));
+});
+
+// Ajuste de tamaño de fuente central
+fontSizeInput.addEventListener("input", () => {
+  palabraCentral.style.fontSize = `${fontSizeInput.value}px`;
+  if (words.length > 0) {
+    mostrarPalabra(currentIndex);
+  }
+});
+
+// Ajuste de velocidad en vivo
+velocidadInput.addEventListener("input", () => {
+  if (isRunning && intervalId) {
+    crearIntervalo();
+  }
+});
+
+// Toggle negrita de letra roja
+toggleBold.addEventListener("change", () => {
+  if (words.length > 0) {
+    mostrarPalabra(currentIndex);
+  }
+});
+
+// Toggle línea central
+toggleLine.addEventListener("change", () => {
+  const display = document.querySelector('.display');
+  if (toggleLine.checked) {
+    display.classList.add('line-visible');
+  } else {
+    display.classList.remove('line-visible');
+  }
 });
 
 // Botón iniciar
